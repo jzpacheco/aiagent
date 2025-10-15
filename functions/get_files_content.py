@@ -1,5 +1,7 @@
 import os
 
+from google.genai import types
+
 from config import config
 
 
@@ -26,3 +28,16 @@ def get_file_content(working_directory, file_path):
     except Exception as e:
         return f'Error reading file "{file_path}": {e}'
 
+schema_get_files_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Get file content from a specified path, constrained to the working directory.",
+    parameters= types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path to the file that content will be read, relative to the working directory.",
+            )
+        }
+    )
+)
