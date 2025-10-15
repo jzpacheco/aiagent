@@ -6,6 +6,7 @@ from google import genai
 from google.genai import types
 
 from call_function import available_functions
+from system_prompt import system_prompt
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
@@ -29,19 +30,6 @@ def main():
     messages =[
         types.Content(role="user", parts=[types.Part(text=prompt)])
     ]
-
-    system_prompt = """
-You are a helpful AI coding agent.
-
-When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
-
-- List files and directories
-- Read file contents
-- Execute Python files with optional arguments
-- write or overwrite files
-
-All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
-"""
 
     response = client.models.generate_content(
         model='gemini-2.0-flash-001',
