@@ -5,18 +5,12 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-from functions.get_files_info import schema_get_files_info
+from call_function import available_functions
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
 
 client = genai.Client(api_key=api_key)
-
-available_functions = types.Tool(
-    function_declarations=[
-        schema_get_files_info,
-    ]
-)
 
 def main():
     args = sys.argv
@@ -42,6 +36,9 @@ You are a helpful AI coding agent.
 When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
 
 - List files and directories
+- Read file contents
+- Execute Python files with optional arguments
+- write or overwrite files
 
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
 """
@@ -52,8 +49,13 @@ All paths you provide should be relative to the working directory. You do not ne
         config=types.GenerateContentConfig(tools=[available_functions], system_instruction=system_prompt),
     )
 
-    if response.function_calls:
-        for call in response.function_calls:
+
+    func_calls = response.function_calls
+    if not func_calls:
+        return response.text
+    
+    if func_calls:
+        for call in func_calls:
             print(f"Calling function: {call.name}({call.args})")
     else:
         print(response.text)
