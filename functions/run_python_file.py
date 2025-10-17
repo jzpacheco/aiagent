@@ -18,25 +18,28 @@ def run_python_file(working_directory, file_path, args=[]):
         return f'Error: "{file_path}" is not a Python file.'
 
     try:
-        process = subprocess.run(
+        commands = ['python' ,abs_path]
+        if args:
+            commands.extend(args)
+        result = subprocess.run(
+            commands,
             cwd=base_path,
             timeout=30,
+            text=True,
             capture_output=True,
-            args=['python' ,abs_path]+ args,
         )
-        output= process.stdout
-        if not output:
-            return 'No output produced'
+        output= []
+        if result.stdout:
+            output.append(f"STDOUT:\n{result.stdout}")
+        if result.stderr:
+            output.append(f"STDERR:\n{result.stderr}")
 
-        return_code = process.returncode
-        formatted_output = f"STDOUT: {process.stdout}\n STDERR: {process.stderr}"
-        if return_code != 0 :
-            formatted_output += f"\nProcess exited with code {return_code}"
+        if result.returncode != 0 :
+            output.append(f"Process exited with code {result.returncode}")
 
-        return formatted_output
-
+        return "\n".join(output) if output else "No outpu produced."
     except Exception as e:
-        return f'Error: executing file: {e}'
+        return f'Error: executing Python file: {e}'
 
 
 schema_run_python_file = types.FunctionDeclaration(
