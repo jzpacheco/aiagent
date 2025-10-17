@@ -3,8 +3,8 @@ import os
 from google.genai import types
 
 
-def write_file(working_direcotry, file_path, content):
-    base_path = os.path.abspath(working_direcotry)
+def write_file(working_directory, file_path, content):
+    base_path = os.path.abspath(working_directory)
     final_path = os.path.join(base_path,file_path)
 
     if not final_path.startswith(base_path):
