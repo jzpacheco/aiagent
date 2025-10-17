@@ -2,7 +2,7 @@ import os
 
 from google.genai import types
 
-from config import config
+from config import MAX_CONTENT_SIZE
 
 
 def get_file_content(working_directory, file_path):
@@ -15,7 +15,6 @@ def get_file_content(working_directory, file_path):
     if not os.path.isfile(abs_path):
         return f'Error: File not found or is not a regular file: "{file_path}"'
 
-    MAX_CONTENT_SIZE = config['MAX_TEXT_CHARACTERS']
     try:
         with open(abs_path, 'r') as f:
             content = f.read(MAX_CONTENT_SIZE) 
@@ -28,7 +27,7 @@ def get_file_content(working_directory, file_path):
     except Exception as e:
         return f'Error reading file "{file_path}": {e}'
 
-schema_get_files_content = types.FunctionDeclaration(
+schema_get_file_content = types.FunctionDeclaration(
     name="get_file_content",
     description="Get file content from a specified path, constrained to the working directory.",
     parameters= types.Schema(
